@@ -65,8 +65,9 @@ if enviado:
 
     # Intentamos guardar
     try:
-        conn.create(data=df_nuevo) # Ya no necesitas la URL aquí si la pusiste en Secrets
+        conn.update(data=df_nuevo) # Ya no necesitas la URL aquí si la pusiste en Secrets
         st.balloons()
         st.success(f"¡Perfecto {nombre}! Tus respuestas se guardaron en la base de datos.")
     except Exception as e:
-        st.error("Hubo un tema con los permisos de Google. Revisa los Secrets.")
+        st.error(f"Error detallado: {e}")
+
