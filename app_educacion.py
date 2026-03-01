@@ -34,57 +34,39 @@ with st.form("test_form"):
     enviado = st.form_submit_button("Obtener mi resultado")
 
 if enviado:
-    # Lógica de cálculo simplificada
+    # 1. Cálculos de estilo
     respuestas = [p1, p2]
     visual = sum(1 for r in respuestas if "Leer" in r or "Ver" in r)
     auditivo = sum(1 for r in respuestas if "explique" in r or "Escuchar" in r)
     kinestesico = sum(1 for r in respuestas if "hacerlo" in r or "deporte" in r)
 
-    resultado = ""
     if visual >= auditivo and visual >= kinestesico: resultado = "VISUAL"
     elif auditivo >= visual and auditivo >= kinestesico: resultado = "AUDITIVO"
     else: resultado = "KINESTÉSICO"
 
-    # Mostrar resultado con estilo
+    # 2. Mostrar resultado y gráfica (una sola vez)
     st.success(f"¡Listo {nombre}! Tu estilo predominante es: **{resultado}**")
     
-    # Aquí es donde la magia de Data Science ocurre: Guardamos en un DataFrame
-    datos = {"Nombre": [nombre], "Resultado": [resultado]}
-    df = pd.DataFrame(datos)
-    st.write("Vista previa de tus datos guardados:", df)
-    # Creamos una gráfica de barras con los resultados
     st.subheader("📊 Tu Perfil de Aprendizaje")
-    datos_grafica = pd.DataFrame({
-        'Estilo': ['Visual', 'Auditivo', 'Kinestésico'],
-        'Puntos': [visual, auditivo, kinestesico]
-    })
-    st.bar_chart(data=datos_grafica, x='Estilo', y='Puntos', color="#0077b6")
-    # Creamos un DataFrame para la gráfica
     df_grafica = pd.DataFrame({
         'Estilo': ['Visual', 'Auditivo', 'Kinestésico'],
         'Puntos': [visual, auditivo, kinestesico]
     })
-
-    # Mostramos la gráfica de barras
-    st.divider() # Una línea para separar
-    st.subheader("📊 Tu Perfil de Aprendizaje")
     st.bar_chart(df_grafica.set_index('Estilo'))
-    
 
-    st.info("💡 Tip: Si eres Visual, usa mapas mentales. Si eres Auditivo, graba tus clases. Si eres Kinestésico, ¡sigue programando!")
-
+    # 3. Guardado en Google Sheets
     df_nuevo = pd.DataFrame([{
-        "Nombre": nombre, # Aquí ya existe porque estamos dentro del 'if'
+        "Nombre": nombre,
         "Visual": visual,
         "Auditivo": auditivo,
         "Kinestesico": kinestesico,
         "Resultado": resultado
     }])
 
-    # Y finalmente guardas
-    conn.create(data=df_nuevo, spreadsheet="https://docs.google.com/spreadsheets/d/1DkEoFRnOfNceo_73qMplVraMeHDU_LYZqAulDUxM6c8/")
-    st.success(f"¡Listo {nombre}, tus datos se guardaron!")
-
-
-
-
+    # Intentamos guardar
+    try:
+        conn.create(data=df_nuevo) # Ya no necesitas la URL aquí si la pusiste en Secrets
+        st.balloons()
+        st.success(f"¡Perfecto {nombre}! Tus respuestas se guardaron en la base de datos.")
+    except Exception as e:
+        st.error("Hubo un tema con los permisos de Google. Revisa los Secrets.")
