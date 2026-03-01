@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-from library_gsheets_connection import GSheetsConnection
+from streamlit_gsheets import GSheetsConnection
 
 # Creamos la conexión con tu Google Sheet
 conn = st.connection("gsheets", type=GSheetsConnection)
@@ -86,4 +86,5 @@ if enviado:
     
 
     st.info("💡 Tip: Si eres Visual, usa mapas mentales. Si eres Auditivo, graba tus clases. Si eres Kinestésico, ¡sigue programando!")
+
 
