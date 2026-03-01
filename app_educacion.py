@@ -82,8 +82,9 @@ if enviado:
     }])
 
     # Y finalmente guardas
-    conn.create(data=df_nuevo, spreadsheet="https://docs.google.com/spreadsheets/d/1DkEoFRnOfNceo_73qMplVraMeHDU_LYZqAulDUxM6c8/edit?usp=sharing")
-    st.success(f"¡Listo {nombre_alumno}, tus datos se guardaron!")
+    conn.create(data=df_nuevo, spreadsheet="https://docs.google.com/spreadsheets/d/1DkEoFRnOfNceo_73qMplVraMeHDU_LYZqAulDUxM6c8/")
+    st.success(f"¡Listo {nombre}, tus datos se guardaron!")
+
 
 
 
