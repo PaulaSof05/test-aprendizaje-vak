@@ -55,31 +55,33 @@ if enviado:
 
     # 3. GUARDADO ACUMULATIVO (La parte nueva)
     # 3. GUARDADO ACUMULATIVO (Corregido y Mejorado)
+    # 3. GUARDADO ACUMULATIVO (Solución al error de duplicados)
     try:
-        # A. Leemos lo que YA está en el Excel
-        # Usamos .read() pero forzamos a que no traiga basura
-        df_previo = conn.read().dropna(how="all")
+        # A. Limpiamos la memoria de la conexión para leer datos REALES
+        st.cache_data.clear() 
         
-        # B. Creamos la fila del usuario actual 
-        # IMPORTANTE: Los nombres aquí deben ser IDÉNTICOS a los de tu Excel
+        # B. Leemos lo que YA está en el Excel
+        # ttl=0 obliga a que no use memoria vieja
+        df_previo = conn.read(ttl=0).dropna(how="all")
+        
+        # C. Creamos la fila del usuario actual
         df_nuevo = pd.DataFrame([{
             "Nombre": nombre,
             "Visual": visual,
             "Auditivo": auditivo,
-            "Kinestesico": kinestesico, # Sin acento, igual que tu imagen b08558
+            "Kinestesico": kinestesico,
             "Resultado": resultado
         }])
 
-        # C. Juntamos lo viejo con lo nuevo
-        # ignore_index=True es lo que evita que se encimen los datos
+        # D. Juntamos lo viejo con lo nuevo
         df_final = pd.concat([df_previo, df_nuevo], ignore_index=True)
 
-        # D. Subimos la lista completa
+        # E. Subimos la lista completa
         conn.update(data=df_final)
         
         st.balloons()
-        st.success(f"¡Resumen guardado! Eres el registro #{len(df_final)}.")
+        # Ahora el conteo será el correcto
+        st.success(f"¡Resumen guardado! Eres el registro #{len(df_final)} en la lista oficial.")
 
     except Exception as e:
-        # Este mensaje nos dirá exactamente qué falla si algo sale mal
         st.error(f"Error técnico: {e}")
