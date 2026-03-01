@@ -54,26 +54,32 @@ if enviado:
     st.bar_chart(df_grafica.set_index('Estilo'))
 
     # 3. GUARDADO ACUMULATIVO (La parte nueva)
+    # 3. GUARDADO ACUMULATIVO (Corregido y Mejorado)
     try:
-        # Primero leemos lo que YA está en el Excel
-        df_previo = conn.read()
+        # A. Leemos lo que YA está en el Excel
+        # Usamos .read() pero forzamos a que no traiga basura
+        df_previo = conn.read().dropna(how="all")
         
-        # Creamos la fila del usuario actual
+        # B. Creamos la fila del usuario actual 
+        # IMPORTANTE: Los nombres aquí deben ser IDÉNTICOS a los de tu Excel
         df_nuevo = pd.DataFrame([{
             "Nombre": nombre,
             "Visual": visual,
             "Auditivo": auditivo,
-            "Kinestesico": kinestesico,
+            "Kinestesico": kinestesico, # Sin acento, igual que tu imagen b08558
             "Resultado": resultado
         }])
 
-        # Juntamos lo viejo con lo nuevo
+        # C. Juntamos lo viejo con lo nuevo
+        # ignore_index=True es lo que evita que se encimen los datos
         df_final = pd.concat([df_previo, df_nuevo], ignore_index=True)
 
-        # Subimos la lista completa (ahora con una fila más)
+        # D. Subimos la lista completa
         conn.update(data=df_final)
         
         st.balloons()
-        st.success("¡Tus respuestas se guardaron correctamente!")
+        st.success(f"¡Resumen guardado! Eres el registro #{len(df_final)}.")
+
     except Exception as e:
-        st.error(f"Hubo un error al guardar: {e}")
+        # Este mensaje nos dirá exactamente qué falla si algo sale mal
+        st.error(f"Error técnico: {e}")
