@@ -34,7 +34,7 @@ with st.form("test_form"):
     enviado = st.form_submit_button("Obtener mi resultado")
 
 if enviado:
-    # 1. Cálculos de estilo
+    # 1. Cálculos de estilo (Esto ya lo tienes)
     respuestas = [p1, p2]
     visual = sum(1 for r in respuestas if "Leer" in r or "Ver" in r)
     auditivo = sum(1 for r in respuestas if "explique" in r or "Escuchar" in r)
@@ -44,30 +44,36 @@ if enviado:
     elif auditivo >= visual and auditivo >= kinestesico: resultado = "AUDITIVO"
     else: resultado = "KINESTÉSICO"
 
-    # 2. Mostrar resultado y gráfica (una sola vez)
+    # 2. Mostrar resultado y gráfica
     st.success(f"¡Listo {nombre}! Tu estilo predominante es: **{resultado}**")
     
-    st.subheader("📊 Tu Perfil de Aprendizaje")
     df_grafica = pd.DataFrame({
         'Estilo': ['Visual', 'Auditivo', 'Kinestésico'],
         'Puntos': [visual, auditivo, kinestesico]
     })
     st.bar_chart(df_grafica.set_index('Estilo'))
 
-    # 3. Guardado en Google Sheets
-    df_nuevo = pd.DataFrame([{
-        "Nombre": nombre,
-        "Visual": visual,
-        "Auditivo": auditivo,
-        "Kinestesico": kinestesico,
-        "Resultado": resultado
-    }])
-
-    # Intentamos guardar
+    # 3. GUARDADO ACUMULATIVO (La parte nueva)
     try:
-        conn.update(data=df_nuevo) # Ya no necesitas la URL aquí si la pusiste en Secrets
-        st.balloons()
-        st.success(f"¡Perfecto {nombre}! Tus respuestas se guardaron en la base de datos.")
-    except Exception as e:
-        st.error(f"Error detallado: {e}")
+        # Primero leemos lo que YA está en el Excel
+        df_previo = conn.read()
+        
+        # Creamos la fila del usuario actual
+        df_nuevo = pd.DataFrame([{
+            "Nombre": nombre,
+            "Visual": visual,
+            "Auditivo": auditivo,
+            "Kinestesico": kinestesico,
+            "Resultado": resultado
+        }])
 
+        # Juntamos lo viejo con lo nuevo
+        df_final = pd.concat([df_previo, df_nuevo], ignore_index=True)
+
+        # Subimos la lista completa (ahora con una fila más)
+        conn.update(data=df_final)
+        
+        st.balloons()
+        st.success("¡Tus respuestas se guardaron correctamente!")
+    except Exception as e:
+        st.error(f"Hubo un error al guardar: {e}")
