@@ -1,27 +1,13 @@
 import streamlit as st
 import pandas as pd
 
+# Configuración estética de la página
+st.set_page_config(page_title="Test de Aprendizaje VAK", page_icon="🎓")
+
 from streamlit_gsheets import GSheetsConnection
 
 # Creamos la conexión con tu Google Sheet
 conn = st.connection("gsheets", type=GSheetsConnection)
-
-# --- Dentro del bloque 'if enviado:' reemplaza el guardado de CSV por esto: ---
-df_nuevo = pd.DataFrame([{
-    "Nombre": nombre_alumno,
-    "Visual": visual,
-    "Auditivo": auditivo,
-    "Kinestesico": kinestesico,
-    "Resultado": estilo_final,
-    "Fecha": pd.Timestamp.now()
-}])
-
-# Enviamos los datos a Google Sheets
-conn.create(data=df_nuevo, spreadsheet="https://docs.google.com/spreadsheets/d/1DkEoFRnOfNceo_73qMplVraMeHDU_LYZqAulDUxM6c8/edit?gid=0#gid=0")
-st.success("¡Datos guardados en la base de datos central!")
-
-# Configuración estética de la página
-st.set_page_config(page_title="Test de Aprendizaje VAK", page_icon="🎓")
 
 st.title("🎓 Diagnóstico de Estilo de Aprendizaje")
 st.write("Hola. Responde estas preguntas para personalizar tu experiencia educativa.")
@@ -86,5 +72,18 @@ if enviado:
     
 
     st.info("💡 Tip: Si eres Visual, usa mapas mentales. Si eres Auditivo, graba tus clases. Si eres Kinestésico, ¡sigue programando!")
+
+    df_nuevo = pd.DataFrame([{
+        "Nombre": nombre, # Aquí ya existe porque estamos dentro del 'if'
+        "Visual": visual,
+        "Auditivo": auditivo,
+        "Kinestesico": kinestesico,
+        "Resultado": resultado
+    }])
+
+    # Y finalmente guardas
+    conn.create(data=df_nuevo, spreadsheet="https://docs.google.com/spreadsheets/d/1DkEoFRnOfNceo_73qMplVraMeHDU_LYZqAulDUxM6c8/edit?usp=sharing")
+    st.success(f"¡Listo {nombre_alumno}, tus datos se guardaron!")
+
 
 
