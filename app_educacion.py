@@ -19,6 +19,7 @@ df_nuevo = pd.DataFrame([{
 # Enviamos los datos a Google Sheets
 conn.create(data=df_nuevo, spreadsheet="https://docs.google.com/spreadsheets/d/1DkEoFRnOfNceo_73qMplVraMeHDU_LYZqAulDUxM6c8/edit?gid=0#gid=0")
 st.success("¡Datos guardados en la base de datos central!")
+
 # Configuración estética de la página
 st.set_page_config(page_title="Test de Aprendizaje VAK", page_icon="🎓")
 
@@ -85,3 +86,4 @@ if enviado:
     
 
     st.info("💡 Tip: Si eres Visual, usa mapas mentales. Si eres Auditivo, graba tus clases. Si eres Kinestésico, ¡sigue programando!")
+
