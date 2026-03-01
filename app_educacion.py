@@ -1,6 +1,24 @@
 import streamlit as st
 import pandas as pd
 
+from library_gsheets_connection import GSheetsConnection
+
+# Creamos la conexión con tu Google Sheet
+conn = st.connection("gsheets", type=GSheetsConnection)
+
+# --- Dentro del bloque 'if enviado:' reemplaza el guardado de CSV por esto: ---
+df_nuevo = pd.DataFrame([{
+    "Nombre": nombre_alumno,
+    "Visual": visual,
+    "Auditivo": auditivo,
+    "Kinestesico": kinestesico,
+    "Resultado": estilo_final,
+    "Fecha": pd.Timestamp.now()
+}])
+
+# Enviamos los datos a Google Sheets
+conn.create(data=df_nuevo, spreadsheet="https://docs.google.com/spreadsheets/d/1DkEoFRnOfNceo_73qMplVraMeHDU_LYZqAulDUxM6c8/edit?gid=0#gid=0")
+st.success("¡Datos guardados en la base de datos central!")
 # Configuración estética de la página
 st.set_page_config(page_title="Test de Aprendizaje VAK", page_icon="🎓")
 
@@ -65,4 +83,5 @@ if enviado:
     st.subheader("📊 Tu Perfil de Aprendizaje")
     st.bar_chart(df_grafica.set_index('Estilo'))
     
+
     st.info("💡 Tip: Si eres Visual, usa mapas mentales. Si eres Auditivo, graba tus clases. Si eres Kinestésico, ¡sigue programando!")
